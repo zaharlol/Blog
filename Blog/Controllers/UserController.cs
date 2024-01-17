@@ -11,12 +11,6 @@ namespace Blog.Controllers
     public class UserController : Controller
     {
         DataContext db;
-        private readonly IMapper _mapper;
-
-        public UserController(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
 
         [Route("Register")]
         [HttpGet]
@@ -29,9 +23,11 @@ namespace Blog.Controllers
         [HttpPost]
         public IActionResult Register(RegisterViewModel model)
         {
-            {
-                    User user = new User() 
-                    { 
+            {              
+                if (ModelState.IsValid)
+                {
+                    User user = new User()
+                    {
                         Id = 1,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
@@ -39,8 +35,8 @@ namespace Blog.Controllers
                     };
                     db.Users.Add(user);
                     db.SaveChanges();
-                
-                return View("Index");
+                }
+                return View("Register");
             }
         }
           public void Read() { }

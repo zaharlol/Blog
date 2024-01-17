@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Blog.Models;
 using Microsoft.AspNetCore.Connections;
+using Microsoft.Extensions.Options;
+using System;
 
 
 namespace Blog
@@ -8,15 +10,10 @@ namespace Blog
     public class DataContext : DbContext
     {
         public DbSet<User> Users {get; set;}
-
-        public DataContext()
+        
+        public DataContext(DbContextOptions<DataContext> options)  : base(options)
         {
             Database.EnsureCreated();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=Blog.db");
         }
     }
 }
