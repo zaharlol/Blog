@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "NewArticle";
+}
+
+@model Blog.ViewModels.ArticleViewModel
+
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="block-reg background-white">
+    <h4 class="center">Новая статья</h4>
+    <form class="frm" method="post" asp-controller="Article" asp-action="NewArticle">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <input type="submit" value="Добавить" />
+        </div>
+    </form>
+</div>

@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Account";
+}
+
+@model Blog.ViewModels.ArticleViewModel
+
+
+<div class="block-reg background-white">
+<label>Твой Аккаунт</label>
+<form class="frm" method="get" asp-controller="Article" asp-action="Account">
+<div>
+            <button type="button"
+                    onclick="location.href='@Url.Action("","NewArticle")'">Новая статья</button>
+
+</div>
+</form>
+</div>
