@@ -60,13 +60,10 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)
         {
-            var a = db.Users.Select(s => s.FirstName);
-            var b = db.Users.Select(s => s.PasswordReg.ToString());
-            string c = "Захар";
-            string e = "1";
+            User user = db.Users.FirstOrDefault(s => s.FirstName == model.FirstName);
             if (ModelState.IsValid)
             {
-                if (model.FirstName == c && model.PasswordReg == e)
+                if (model.PasswordReg == user.PasswordReg)
                 {
                    return View("Account");
                 }

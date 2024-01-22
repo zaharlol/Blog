@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Arts";
+}
+
+@model Blog.ViewModels.ArticleViewModel
+
+< script src = "https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js" ></ script >
+< script src = "https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js" ></ script >
+
+< div class= "block-reg background-white" >
+    < form class= "frm" method = "get" asp - controller = "Article" asp - action = "ViewArticles" >
+        < div asp - validation - summary = "ModelOnly" ></ div >
+    </ form >
+    @if (Model.Articles.Count != 0)
+    {
+
+        @foreach (var art in Model.Articles)
+        {
+                    < div >
+                        < label > @art.Title:</ label >
+                @art.Content
+                    </ div >
+        }
+    }
+    else
+    {
+    < div >
+        < label > У вас пока нет статей</ label >
+    </ div >
+    }
+</ div >

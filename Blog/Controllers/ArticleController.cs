@@ -1,7 +1,13 @@
 ﻿using Blog.Models;
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Data.SqlClient.DataClassification;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers
 {
@@ -13,6 +19,7 @@ namespace Blog.Controllers
         {
             db = _db;
         }
+
         [Route("NewArticle")]
         [HttpGet]
         public IActionResult Create() 
@@ -35,12 +42,34 @@ namespace Blog.Controllers
                 db.Articles.Add(article);
                 db.SaveChanges();
 
-                return View("NewArticle");
+                return View("Arts");
             }
             return View("NewArticle");
         }
-        public void Read() { }
+
+        [Route("Arts")]
+        [HttpGet]
+        public IActionResult ViewArticles() 
+        {
+            var model = db.Articles.ToList();
+            return View("Arts", model);
+
+        }
+
+        [Route("Article")]
+        [HttpGet]
+        public IActionResult ViewArticle()
+        {
+           
+            return View("Article");
+
+        }
+
         public void Update() { }
-        public void Delete() { }
+        public void Delete(ArticleViewModel model) 
+        {
+            var art = db.Articles.FirstOrDefault(x => x.Id == model.Id);
+            db.Articles.Remove(art);
+        }
     }
 }

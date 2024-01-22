@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Article";
+}
+
+@model Blog.ViewModels.ArticleViewModel
+
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="block-reg background-white">
+
+<div>
+         <label>
+                @Model.Title
+         </label>   
+         @Model.Content
+</div> 
+    
+
+</div>
