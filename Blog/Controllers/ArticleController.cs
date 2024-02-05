@@ -1,5 +1,7 @@
 ﻿using Blog.Models;
 using Blog.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Data.SqlClient.DataClassification;
@@ -42,26 +44,29 @@ namespace Blog.Controllers
                 db.Articles.Add(article);
                 db.SaveChanges();
 
-                return View("Arts");
+                return ViewArticles();
             }
             return View("NewArticle");
         }
 
+        [Authorize]
         [Route("Arts")]
         [HttpGet]
         public IActionResult ViewArticles() 
         {
-            var model = db.Articles.ToList();
+            var model = new ArticleViewModel();
+            model.Articles = db.Articles.ToList();
             return View("Arts", model);
 
         }
 
         [Route("Article")]
         [HttpGet]
-        public IActionResult ViewArticle()
+        public IActionResult ViewArticle(ArticleViewModel model)
         {
-           
-            return View("Article");
+            model.Title = "Привет";
+            model.Content = "Пока";
+            return View("Article", model);
 
         }
 

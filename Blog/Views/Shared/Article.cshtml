@@ -8,13 +8,16 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
 
 <div class="block-reg background-white">
-
+    <form class="frm" method="get"  asp-controller="Articel" asp-action="ViewArticle">
 <div>
-         <label>
-                @Model.Title
-         </label>   
+         <label>@Model.Title</label>   
          @Model.Content
+
+            <button type="button"
+                    onclick="location.href='@Url.Action("","NewComment")'">
+                Добавить комментарий
+            </button>
 </div> 
-    
+</form>
 
 </div>

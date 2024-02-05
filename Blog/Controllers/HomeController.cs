@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Blog.Controllers
@@ -35,6 +37,12 @@ namespace Blog.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public string GetInfo()
+        {
+            var email = HttpContext.User.Identity.Name;
+            return "<p>Эл. адрес: " + email;
         }
     }
 }

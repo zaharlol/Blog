@@ -1,8 +1,12 @@
 using AutoMapper;
 using Blog.Models;
+using Blog.Repository;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Blog
@@ -27,8 +32,29 @@ namespace Blog
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
             services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=Blog.db"));
+
+            var mapperConfig = new MapperConfiguration((v) =>
+            {
+                v.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            services.AddSingleton(mapper);
+
+            services.AddAuthentication(options => options.DefaultScheme = "Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+                    {
+                        OnRedirectToLogin = redirectContext =>
+                        {
+                            redirectContext.HttpContext.Response.StatusCode = 401;
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -22,5 +22,7 @@ namespace Blog.ViewModels
         public Guid Id { get; set; }
 
         public List<Article> Articles { get; set; }
+
+        public User User { get; set; }
     }
 }

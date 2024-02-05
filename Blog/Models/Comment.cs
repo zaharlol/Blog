@@ -6,5 +6,7 @@ namespace Blog.Models
     {
         public Guid Id { get; set; }
         public string Content { get; set; }
+
+        public Article Article { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Blog.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Blog.ViewModels
 {
@@ -13,5 +14,8 @@ namespace Blog.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Пароль", Prompt = "Введите пароль")]
         public string PasswordReg { get; set; }
+
+        public string ReturnUrl { get; set; }
+
     }
 }

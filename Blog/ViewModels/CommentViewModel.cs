@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Blog.Models;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Blog.ViewModels
 {
@@ -7,5 +10,7 @@ namespace Blog.ViewModels
         [DataType(DataType.Text)]
         [Display(Name = "Comment")]
         public string Content { get; set; }
+
+        public List<Comment> Comments { get; set; }
     }
 }
