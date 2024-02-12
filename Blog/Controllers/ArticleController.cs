@@ -53,7 +53,7 @@ namespace Blog.Controllers
             return View("NewArticle");
         }
 
-        
+        [Authorize(Roles = "Модератор")]
         [Route("Arts")]
         [HttpGet]
         public IActionResult ViewArticles()

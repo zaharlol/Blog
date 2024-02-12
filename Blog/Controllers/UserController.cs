@@ -113,7 +113,7 @@ namespace Blog.Controllers
             var claims = new List<Claim>()
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.FirstName)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, //как написать, что бы определить роль пользователя?)
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
