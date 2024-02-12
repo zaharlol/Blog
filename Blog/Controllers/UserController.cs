@@ -92,11 +92,10 @@ namespace Blog.Controllers
             if (ModelState.IsValid)
             {
                 User user = await db.Users.FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
-                var us = mapper.Map<User>(user);
 
-                if (model.PasswordReg == us.PasswordReg)
+                if (model.PasswordReg == user.PasswordReg)
                 {
-                    await Authenticate(us);
+                    await Authenticate(user);
                     return RedirectToAction("", "Account");
                 }
                 else
@@ -113,7 +112,7 @@ namespace Blog.Controllers
             var claims = new List<Claim>()
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, //как написать, что бы определить роль пользователя?)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, //user.Role.Name)//что тут писать?
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
