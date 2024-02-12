@@ -2,16 +2,27 @@
     ViewData["Title"] = "Account";
 }
 
-@model Blog.ViewModels.ArticleViewModel
+@model Blog.ViewModels.AccountViewModel
 
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
 
 <div class="block-reg background-white">
-<label>Твой Аккаунт</label>
-<form class="frm" method="get" asp-controller="Article" asp-action="Account">
-<div>
-            <button type="button"
-                    onclick="location.href='@Url.Action("","NewArticle")'">Новая статья</button>
+    <form class="frm" method="get" asp-controller="User" asp-action="Account">
+        <div>
+            <label>@Model.Name</label>
+            <div>
+                @foreach (var a in @Model.Articles)
+                {
+                    <font size="20"><dl><a class="nav-link text-dark" href="@Url.Action("ViewArticle", "Article", new { id = a.Id })">@a.Title</a></dl></font>
+                }
+            </div>
 
-</div>
-</form>
+            <button type="button"
+                    onclick="location.href='@Url.Action("","NewArticle")'">
+                Новая статья
+            </button>
+        </div>
+    </form>
+
 </div>

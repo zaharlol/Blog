@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Blog.Controllers
 {
@@ -21,7 +23,7 @@ namespace Blog.Controllers
     {
         DataContext db;
         IMapper mapper;
-       
+
         public UserController(DataContext data, IMapper mapper)
         {
             db = data;
@@ -38,29 +40,39 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         [Route("Register")]
         [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-                if (ModelState.IsValid)
-                {
+            if (ModelState.IsValid)
+            {
                 User user = new User()
                 {
-                      FirstName = model.FirstName,
-                      LastName = model.LastName,
-                      PasswordReg = model.PasswordReg,
-                      Role = new Role()
-                      {
-                          Id = 1,
-                          Name = "Пользователь"
-                      }
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PasswordReg = model.PasswordReg,
                 };
-                    db.Users.Add(user);
-                    db.SaveChanges();
 
-                    mapper.Map<User>(user);
+                Role role = db.Roles.FirstOrDefault(r => r.Id == 1);
 
-                    return View("Login");
+                if (role == null)
+                {
+                    role = new Role
+                    {
+                        Id = 1,
+                        Name = "Пользователь"
+                    };
                 }
-                return View("Register");
+
+                user.Role = role;
+
+                db.Users.Add(user);
+                db.SaveChanges();
+                await Authenticate(user);
+
+                mapper.Map<User>(user);
+
+                return View("Login");
+            }
+            return View("Register");
         }
 
 
@@ -76,14 +88,16 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            User user = db.Users.FirstOrDefault(s => s.FirstName == model.FirstName);
-            var us = mapper.Map<User>(user);
 
             if (ModelState.IsValid)
             {
+                User user = await db.Users.FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
+                var us = mapper.Map<User>(user);
+
                 if (model.PasswordReg == us.PasswordReg)
                 {
-                    return View("Account");
+                    await Authenticate(us);
+                    return RedirectToAction("", "Account");
                 }
                 else
                 {
@@ -91,9 +105,15 @@ namespace Blog.Controllers
                 }
             }
 
+            return View("Login");
+        }
+
+        private async Task Authenticate(User user)
+        {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, model.FirstName)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.FirstName)
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
@@ -104,23 +124,36 @@ namespace Blog.Controllers
                 );
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-            return View("Login");
         }
 
-        [Route("MyPage")]
+        [Authorize]
+        [Route("Account")]
         [HttpGet]
-        public IActionResult MyPage()
+        public IActionResult Account(AccountViewModel model)
         {
-            var user = User;
-            var result = mapper.Map<User>(user);
-            var model = new UserViewModel(result);
+            User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+
+            model.Name = user.LastName + " " + user.FirstName;
+
+            model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
 
             return View("Account", model);
         }
 
+        [Route("Logout")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        { 
+            await HttpContext.SignOutAsync();
+            return View("Login"); 
+        }
+
         public void Read() { }
         public void Update() { }
-        public void Delete() { }
+        public void Delete(User user) 
+        {
+            var art = db.Users.FirstOrDefault(x => x.Id == user.Id);
+            db.Users.Remove(art);
+        }
     }
 }

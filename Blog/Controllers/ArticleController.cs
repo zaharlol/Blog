@@ -24,8 +24,8 @@ namespace Blog.Controllers
 
         [Route("NewArticle")]
         [HttpGet]
-        public IActionResult Create() 
-        { 
+        public IActionResult Create()
+        {
             return View("NewArticle");
         }
 
@@ -33,6 +33,9 @@ namespace Blog.Controllers
         [HttpPost]
         public IActionResult Create(ArticleViewModel model)
         {
+
+            User currentUser = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+
             if (ModelState.IsValid)
             {
                 Article article = new Article()
@@ -40,6 +43,7 @@ namespace Blog.Controllers
                     Id = Guid.NewGuid(),
                     Title = model.Title,
                     Content = model.Content,
+                    User = currentUser,
                 };
                 db.Articles.Add(article);
                 db.SaveChanges();
@@ -49,29 +53,29 @@ namespace Blog.Controllers
             return View("NewArticle");
         }
 
-        [Authorize]
+        
         [Route("Arts")]
         [HttpGet]
-        public IActionResult ViewArticles() 
+        public IActionResult ViewArticles()
         {
-            var model = new ArticleViewModel();
-            model.Articles = db.Articles.ToList();
-            return View("Arts", model);
+            List<Article> articles = db.Articles.ToList();
+
+            return View("Arts", articles);
 
         }
 
         [Route("Article")]
         [HttpGet]
-        public IActionResult ViewArticle(ArticleViewModel model)
+        public IActionResult ViewArticle(Guid id)
         {
-            model.Title = "Привет";
-            model.Content = "Пока";
-            return View("Article", model);
+            Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
+
+            return View("Article", artical);
 
         }
 
         public void Update() { }
-        public void Delete(ArticleViewModel model) 
+        public void Delete(Article model)
         {
             var art = db.Articles.FirstOrDefault(x => x.Id == model.Id);
             db.Articles.Remove(art);

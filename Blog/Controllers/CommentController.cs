@@ -2,6 +2,7 @@
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 
 namespace Blog.Controllers
 {
@@ -41,6 +42,10 @@ namespace Blog.Controllers
         }
         public void Read() { }
         public void Update() { }
-        public void Delete() { }
+        public void Delete(Comment comment) 
+        {
+            var art = db.Comments.FirstOrDefault(x => x.Id == comment.Id);
+            db.Comments.Remove(art);
+        }
     }
 }

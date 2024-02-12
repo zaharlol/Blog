@@ -18,11 +18,5 @@ namespace Blog.ViewModels
         [DataType(DataType.Text)]
         [Display(Name = "title", Prompt = "Содержание")]
         public string Content { get; set; }
-
-        public Guid Id { get; set; }
-
-        public List<Article> Articles { get; set; }
-
-        public User User { get; set; }
     }
 }
