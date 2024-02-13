@@ -91,7 +91,7 @@ namespace Blog.Controllers
 
             if (ModelState.IsValid)
             {
-                User user = await db.Users.FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
+                User user = await db.Users.Include(s => s.Role).FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
 
                 if (model.PasswordReg == user.PasswordReg)
                 {
@@ -112,7 +112,7 @@ namespace Blog.Controllers
             var claims = new List<Claim>()
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, //user.Role.Name)//что тут писать?
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
