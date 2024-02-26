@@ -15,13 +15,14 @@
     {
         @foreach (var art in Model)
         {
-            <div>
-
+            <div class="border">
                 <font size="20"><dl><a class="nav-link text-dark" href="@Url.Action("ViewArticle", "Article", new { id = art.Id })">@art.Title</a></dl></font>
-                <div>
+                <div class="border">
                     @art.Content
                 </div>
+
             </div>
+            
         }
     }
     else

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Data.SqlClient.DataClassification;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,6 @@ namespace Blog.Controllers
             return View("NewArticle");
         }
 
-        [Authorize(Roles = "Модератор")]
         [Route("Arts")]
         [HttpGet]
         public IActionResult ViewArticles()

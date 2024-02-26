@@ -1,8 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Start Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+@if (User.Identity.IsAuthenticated)
+{
+    <a >Account</a>
+}
+else
+{
+    <div class="container text-center">
+        <h1 class="display-4">Добро пожаловать в наш блог</h1>
+        <font size="15"><a class="text-danger" href="@Url.Action("", "Login")">Login</a>
+            <a class="text-success" href="@Url.Action("", "Register")">Register</a>
+        </font>
+    </div>
+}

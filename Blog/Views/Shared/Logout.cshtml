@@ -2,7 +2,9 @@
     ViewData["Title"] = "Logout";
 }
 
-<div class="righ-align">
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+<div class="container text-right">
         <form method="post" asp-controller="User" asp-action="Logout">
             <input class="enter_submit" type="submit" value="Выход" />
         </form>
