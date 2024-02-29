@@ -10,11 +10,11 @@
 <div class="block-reg background-white">
     <form class="frm" method="get" asp-controller="User" asp-action="Account">
         <div>
-            <label>@Model.Name</label>
+            <font size="5"><label class="alert-link">@Model.Name</label></font>
             <div>
                 @foreach (var a in @Model.Articles)
                 {
-                    <font size="20"><dl><a class="nav-link text-dark" href="@Url.Action("ViewArticle", "Article", new { id = a.Id })">@a.Title</a></dl></font>
+                    <font size="5"><dl><a class="nav-link text-dark border" href="@Url.Action("ViewArticle", "Article", new { id = a.Id })">@a.Title</a></dl></font>
                 }
             </div>
 

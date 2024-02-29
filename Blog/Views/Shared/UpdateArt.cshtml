@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "UpdateArt";
+}
+@model Blog.ViewModels.ArticleViewModel
+
+
+<form class="frm" method="post" asp-controller="Article" asp-action="UpdateArticles">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div>
+        <div class="mrgn">
+            Заголовок
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+    <div>
+        <div class="mrgn">
+            Содержание
+            <div>
+            <textarea asp-for="Content" cols="100" rows="7"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <input class="bg-success text-white" type="submit" value="Обновить данные"/>
+    </div>
+</form>

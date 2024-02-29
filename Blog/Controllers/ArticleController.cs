@@ -58,7 +58,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult ViewArticles()
         {
-            List<Article> articles = db.Articles.ToList();
+            List<Article> articles = db.Articles.Include(s => s.User).ToList();
 
             return View("Arts", articles);
 
@@ -74,7 +74,30 @@ namespace Blog.Controllers
 
         }
 
-        public void Update() { }
+        [Route("UpdateArt")]
+        [HttpGet]
+        public IActionResult UpdateArticle(ArticleViewModel model, Guid id) 
+        {
+            Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
+            model.Title = artical.Title;
+            model.Content = artical.Content;
+
+            return View("UpdateArt", model);
+        }
+
+        [Route("UpdateArt")]
+        [HttpPost]
+        public IActionResult UpdateArticles(Article model)
+        {
+            Article article = db.Articles.FirstOrDefault(x => x.Id == model.Id);
+            article.Title = model.Title;
+            article.Content = model.Content;
+            db.Articles.Update(article);
+            db.SaveChanges();
+
+            return View("Account");
+        }
+
         public void Delete(Article model)
         {
             var art = db.Articles.FirstOrDefault(x => x.Id == model.Id);

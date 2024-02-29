@@ -10,7 +10,6 @@ namespace Blog.ViewModels
 {
     public class ArticleViewModel
     {
-        [Required]
         [DataType(DataType.Text)]
         [Display (Name = "title", Prompt = "Заголовок")]
         public string Title { get; set; }

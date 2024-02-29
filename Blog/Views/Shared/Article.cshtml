@@ -10,16 +10,25 @@
 <div class="block-reg background-white">
     <form class="frm" method="get" asp-controller="Article" asp-action="ViewArticle">
         <div>
-            <label>@Model.Title</label>
-            <div>
-                @Model.Content
+            <div class="border">
+                <font size="10"><dl><a class="nav-link text-dark">@Model.Title</a></dl></font>
             </div>
-
-            <button type="button"
+            <div>
+            <textarea cols="100" rows="7">@Model.Content</textarea>
+            </div>
+            <button class="bg-success" type="button"
                     onclick="location.href='@Url.Action("","NewComment")'">
                 Добавить комментарий
             </button>
+            <button type="button"
+                    onclick="location.href='@Url.Action("UpdateArticle","Article",new { id = Model.Id })'">
+                Редактировать
+            </button>
+            <form asp-controller="Article" asp-action="Delete" method="post">
+                <button class="bg-danger" type="submit">
+                    Удалить
+                </button>
+            </form>
         </div>
     </form>
-
 </div>

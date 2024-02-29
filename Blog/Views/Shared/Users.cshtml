@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Users";
+}
+@model List<User>
+
+<h1>Пользователи</h1>
+<div class="block-reg background-white">
+    <form class="frm" method="get" asp-controller="User" asp-action="ViewUsers">
+        <div asp-validation-summary="ModelOnly"></div>
+    </form>
+    @if (Model.Count != 0)
+    {
+        @foreach (var art in Model)
+        {
+            <div class="border">
+                <font size="5"><dl><a class="nav-link text-dark">@art.FirstName @art.LastName</a></dl></font>
+                <div class="border text-lg-right">
+                    Статей: @art.Articles.Count
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div>
+            <label> У вас пока нет статей</label>
+        </div>
+    }
+</div>

@@ -1,12 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Arts";
 }
-
 @model List<Article>
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
-
+<h1>Статьи</h1>
 <div class="block-reg background-white">
     <form class="frm" method="get" asp-controller="Article" asp-action="ViewArticles">
         <div asp-validation-summary="ModelOnly"></div>
@@ -16,13 +15,15 @@
         @foreach (var art in Model)
         {
             <div class="border">
-                <font size="20"><dl><a class="nav-link text-dark" href="@Url.Action("ViewArticle", "Article", new { id = art.Id })">@art.Title</a></dl></font>
+                <font size="10"><dl><a class="nav-link text-dark" href="@Url.Action("ViewArticle", "Article", new { id = art.Id })">@art.Title</a></dl></font>
+                <div class="text-lg-right badge-success">
+                    @art.User.FirstName
+                    @art.User.LastName
+                </div>
                 <div class="border">
                     @art.Content
-                </div>
-
+                </div>                 
             </div>
-            
         }
     }
     else
@@ -31,4 +32,8 @@
             <label> У вас пока нет статей</label>
         </div>
     }
+    <button type="button"
+            onclick="location.href='@Url.Action("","NewArticle")'">
+        Новая статья
+    </button>
 </div>

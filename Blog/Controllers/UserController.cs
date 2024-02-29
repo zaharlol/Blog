@@ -147,7 +147,15 @@ namespace Blog.Controllers
             return View("Login"); 
         }
 
-        public void Read() { }
+        [Route("Users")]
+        [HttpGet]
+        public IActionResult ViewUsers() 
+        {
+            List<User> users = db.Users.Include(s => s.Articles).ToList();
+
+            return View("Users", users);
+        }
+
         public void Update() { }
         public void Delete(User user) 
         {
