@@ -3,6 +3,7 @@ using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Blog.Controllers
@@ -21,8 +22,12 @@ namespace Blog.Controllers
         public IActionResult CreateG(Guid id)
         {
             Article article = db.Articles.FirstOrDefault(s => s.Id == id);
-            
-            return View("NewComment", article);
+
+            List<Comment> comments = new List<Comment>();
+
+            CommentViewModel comment = new CommentViewModel("", comments, article);
+
+            return View("NewComment", comment);
         }
 
         [Route("NewComment")]
@@ -45,10 +50,12 @@ namespace Blog.Controllers
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
-                return RedirectToAction("ViewArticle", "Article");
+                return RedirectToAction("ViewArticle", "Article", new { id = model.Article.Id }); //данный метод требует id статьи
+                                                                                                  //передаю в качестве параметра
             }
             return View("NewComment");
         }
+
         public void Read() { }
         public void Update() { }
         public void Delete(Comment comment) 

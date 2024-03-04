@@ -9,7 +9,8 @@
 
 <div class="block-reg background-white">
     <h4 class="center">Комментарий</h4>
-    <form class="frm" method="post" asp-controller="Comment" asp-action="CreateP">
+    <form class="frm" method="post" asp-controller="Comment" asp-action="CreateP"
+          asp-route-article.id="@Model.Article.Id" asp-route-comments="@Model.Comments">
         <div asp-validation-summary="ModelOnly"></div>
         <div>
             <div class="mrgn">
