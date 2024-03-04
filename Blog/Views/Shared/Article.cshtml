@@ -8,27 +8,32 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
 
 <div class="block-reg background-white">
-    <form class="frm" method="get" asp-controller="Article" asp-action="ViewArticle">
         <div>
             <div class="border">
-                <font size="10"><dl><a class="nav-link text-dark">@Model.Title</a></dl></font>
+            <font size="10"><dl class ="nav-link text-dark">@Model.Title</dl></font>
             </div>
             <div>
             <textarea cols="100" rows="7">@Model.Content</textarea>
             </div>
             <button class="bg-success" type="button"
-                    onclick="location.href='@Url.Action("","NewComment")'">
-                Добавить комментарий
+                onclick="location.href='@Url.Action("CreateG","Comment", new { id = Model.Id }))'">
+                Добавить комментарий  
             </button>
-            <button type="button"
-                    onclick="location.href='@Url.Action("UpdateArticle","Article",new { id = Model.Id })'">
-                Редактировать
-            </button>
-            <form asp-controller="Article" asp-action="Delete" method="post">
-                <button class="bg-danger" type="submit">
+            @if (Model.User.FirstName == User.Identity.Name)
+            {
+                <button type="button"
+                onclick="location.href='@Url.Action("UpdateArticle","Article",new { id = Model.Id })'">
+                    Редактировать
+                </button>
+            <button class="bg-danger" type="submit" onclick="location.href='@Url.Action("Delete","Article", new { id = Model.Id })'">
                     Удалить
                 </button>
-            </form>
+            }
         </div>
-    </form>
+    @foreach (var com in Model.Comments)
+    {
+        <div>
+            @com.Content
+        </div>
+    }
 </div>

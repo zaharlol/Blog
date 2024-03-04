@@ -10,8 +10,6 @@
     <form class="frm" method="get" asp-controller="Article" asp-action="ViewArticles">
         <div asp-validation-summary="ModelOnly"></div>
     </form>
-    @if (Model.Count != 0)
-    {
         @foreach (var art in Model)
         {
             <div class="border">
@@ -25,13 +23,6 @@
                 </div>                 
             </div>
         }
-    }
-    else
-    {
-        <div>
-            <label> У вас пока нет статей</label>
-        </div>
-    }
     <button type="button"
             onclick="location.href='@Url.Action("","NewArticle")'">
         Новая статья

@@ -11,13 +11,21 @@
     <form class="frm" method="get" asp-controller="User" asp-action="Account">
         <div>
             <font size="5"><label class="alert-link">@Model.Name</label></font>
+                @if (Model.Articles.Count != 0)
+            {
             <div>
                 @foreach (var a in @Model.Articles)
                 {
                     <font size="5"><dl><a class="nav-link text-dark border" href="@Url.Action("ViewArticle", "Article", new { id = a.Id })">@a.Title</a></dl></font>
                 }
-            </div>
-
+                </div>
+            }
+            else
+            {
+                <div>
+                    <label> У вас пока нет статей</label>
+                </div>
+            }
             <button type="button"
                     onclick="location.href='@Url.Action("","NewArticle")'">
                 Новая статья

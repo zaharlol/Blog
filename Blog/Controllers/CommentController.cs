@@ -1,6 +1,7 @@
 ﻿using Blog.Models;
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -17,26 +18,34 @@ namespace Blog.Controllers
 
         [Route("NewComment")]
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult CreateG(Guid id)
         {
-            return View("NewComment");
+            Article article = db.Articles.FirstOrDefault(s => s.Id == id);
+            
+            return View("NewComment", article);
         }
 
         [Route("NewComment")]
         [HttpPost]
-        public IActionResult Create(CommentViewModel model)
+        public IActionResult CreateP(CommentViewModel model)
         {
+            User currentUser = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+
+            Article article = db.Articles.FirstOrDefault(s => s.Id == model.Article.Id);
+
             if (ModelState.IsValid)
             {
                 Comment comment = new Comment()
                 {
                     Id = Guid.NewGuid(),
                     Content = model.Content,
+                    Article = article,
+                    User = currentUser
                 };
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
-                return View("Article");
+                return RedirectToAction("ViewArticle", "Article");
             }
             return View("NewComment");
         }

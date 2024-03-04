@@ -58,7 +58,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult ViewArticles()
         {
-            List<Article> articles = db.Articles.Include(s => s.User).ToList();
+            List<Article> articles = db.Articles.Include(s => s.User).Include(s => s.Comments).ToList();
 
             return View("Arts", articles);
 
@@ -68,7 +68,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult ViewArticle(Guid id)
         {
-            Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
+            Article artical = db.Articles.Include(s => s.User).Include(s => s.Comments).FirstOrDefault(x => x.Id == id);
 
             return View("Article", artical);
 
@@ -76,13 +76,11 @@ namespace Blog.Controllers
 
         [Route("UpdateArt")]
         [HttpGet]
-        public IActionResult UpdateArticle(ArticleViewModel model, Guid id) 
+        public IActionResult UpdateArticle(Guid id) 
         {
             Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
-            model.Title = artical.Title;
-            model.Content = artical.Content;
 
-            return View("UpdateArt", model);
+            return View("UpdateArt", artical);
         }
 
         [Route("UpdateArt")]
@@ -95,13 +93,16 @@ namespace Blog.Controllers
             db.Articles.Update(article);
             db.SaveChanges();
 
-            return View("Account");
+            return RedirectToAction("", "Account");
         }
 
-        public void Delete(Article model)
+        public IActionResult Delete(Guid id)
         {
-            var art = db.Articles.FirstOrDefault(x => x.Id == model.Id);
+            var art = db.Articles.FirstOrDefault(x => x.Id == id);
             db.Articles.Remove(art);
+            db.SaveChanges();
+
+            return RedirectToAction("", "Account");
         }
     }
 }

@@ -12,5 +12,7 @@ namespace Blog.ViewModels
         public string Content { get; set; }
 
         public List<Comment> Comments { get; set; }
+
+        public Article Article { get; set; }
     }
 }

@@ -1,10 +1,10 @@
 ﻿@{
     ViewData["Title"] = "UpdateArt";
 }
-@model Blog.ViewModels.ArticleViewModel
+@model Blog.Models.Article
 
 
-<form class="frm" method="post" asp-controller="Article" asp-action="UpdateArticles">
+<form class="frm" method="post" asp-controller="Article" asp-action="UpdateArticles" asp-route-id="@Model.Id">
     <div asp-validation-summary="ModelOnly"></div>
     <div>
         <div class="mrgn">
