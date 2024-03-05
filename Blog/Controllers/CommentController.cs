@@ -50,18 +50,42 @@ namespace Blog.Controllers
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
-                return RedirectToAction("ViewArticle", "Article", new { id = model.Article.Id }); //данный метод требует id статьи
-                                                                                                  //передаю в качестве параметра
+                return RedirectToAction("ViewArticle", "Article", new { id = model.Article.Id }); 
             }
             return View("NewComment");
         }
 
-        public void Read() { }
-        public void Update() { }
-        public void Delete(Comment comment) 
+        [Route("UpdateCom")]
+        [HttpGet]
+        public IActionResult UpdateComment(Guid id)
         {
-            var art = db.Comments.FirstOrDefault(x => x.Id == comment.Id);
+            Comment comment = db.Comments.FirstOrDefault(s => s.Id == id);
+
+            return View("UpdateCom", comment);
+        }
+
+        [Route("UpdateCom")]
+        [HttpPost]
+        public IActionResult UpdateComments(Comment model)
+        {
+            Comment comment = db.Comments.Include(s => s.Article).FirstOrDefault(s => s.Id == model.Id);
+
+            comment.Content = model.Content;
+            db.Comments.Update(comment);
+            db.SaveChanges();
+
+
+            return RedirectToAction("ViewArticle", "Article", new { id = comment.Article.Id });
+
+        }
+
+        public IActionResult Delete(Guid id) 
+        {
+            var art = db.Comments.Include(s => s.Article).FirstOrDefault(x => x.Id == id);
             db.Comments.Remove(art);
+            db.SaveChanges();
+
+            return RedirectToAction("ViewArticle", "Article", new { id = art.Article.Id });
         }
     }
 }

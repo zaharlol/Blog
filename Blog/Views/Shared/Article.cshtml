@@ -12,11 +12,29 @@
             <div class="border">
             <font size="10"><dl class ="nav-link text-dark">@Model.Title</dl></font>
             </div>
+        <h5>Описнание</h5>
             <div>
             <textarea cols="100" rows="7">@Model.Content</textarea>
             </div>
+            <h5>Комментарии</h5>
+        @foreach (var com in Model.Comments)
+        {
+            <dl class="border">
+                @com.Content
+                @if (  == com.Id)
+                {
+                    <div class="text-right">
+                        <button class="btn btn-primary bg-success" type="submit"
+                            onclick="location.href='@Url.Action("UpdateComment","Comment", new {id = com.Id})'"></button>
+                        <button class="btn btn-primary bg-danger" type="submit"
+                            onclick="location.href='@Url.Action("Delete","Comment", new {id = com.Id})'"></button>             
+                    </div>
+                }
+            </dl>
+
+        }
             <button class="bg-success" type="button"
-                onclick="location.href='@Url.Action("CreateG","Comment", new { id = Model.Id }))'">
+                onclick="location.href='@Url.Action("CreateG","Comment", new { id = Model.Id })'">
                 Добавить комментарий  
             </button>
             @if (Model.User.FirstName == User.Identity.Name)
@@ -30,10 +48,5 @@
                 </button>
             }
         </div>
-    @foreach (var com in Model.Comments)
-    {
-        <div>
-            @com.Content
-        </div>
-    }
+
 </div>
