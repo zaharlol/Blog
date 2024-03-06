@@ -26,9 +26,13 @@
                     <label> У вас пока нет статей</label>
                 </div>
             }
-            <button type="button"
+            <button type="button" class="bg-success"
                     onclick="location.href='@Url.Action("","NewArticle")'">
                 Новая статья
+            </button>
+            <button type="button"
+                    onclick="location.href='@Url.Action("UpdateUser","User",new {login = Model.User.FirstName})'">
+                Редактировать пользователя
             </button>
         </div>
     </form>

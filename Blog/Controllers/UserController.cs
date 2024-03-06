@@ -132,8 +132,8 @@ namespace Blog.Controllers
         {
             User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
 
+            model.User = user;
             model.Name = user.LastName + " " + user.FirstName;
-
             model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
 
             return View("Account", model);
@@ -156,7 +156,47 @@ namespace Blog.Controllers
             return View("Users", users);
         }
 
-        public void Update() { }
+
+        [Route("UpdateUs")]
+        [HttpGet]
+        public IActionResult UpdateUser(string login) 
+        {
+            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == login);
+            return View("UpdateUs", user);
+        }
+
+        [Route("UpdateUs")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateUsers(User model)
+        {
+            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == User.Identity.Name);
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PasswordReg = model.PasswordReg;
+            user.Role = model.Role;
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName)
+            };
+
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(
+                claims,
+                "AppCookie",
+                ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType
+                );
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            db.Users.Update(user);
+            db.SaveChanges();
+
+            return RedirectToAction("Account","User");
+        }
+
+
         public void Delete(User user) 
         {
             var art = db.Users.FirstOrDefault(x => x.Id == user.Id);

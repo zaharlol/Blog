@@ -11,6 +11,7 @@ namespace Blog.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PasswordReg { get; set; }
+        public int RoleId { get; set; }
 
         public List<Article> Articles { get; set; }
         public List<Comment> Comments { get; set; }

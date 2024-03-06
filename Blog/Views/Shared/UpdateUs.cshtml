@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "UpdateUs";
+}
+@model Blog.Models.User
+
+
+<form class="frm" method="post" asp-controller="User" asp-action="UpdateUsers" asp-route-login="@Model.FirstName">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div>
+        <div class="mrgn">
+            Имя
+            <div>
+                <input asp-for="FirstName" cols="100" rows="7" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="mrgn">
+            Фамилия
+            <div>
+                <input asp-for="LastName" cols="100" rows="7"/>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="mrgn">
+            Пароль
+            <div>
+                <input asp-for="PasswordReg" cols="100" rows="7" />
+                <span asp-validation-for="PasswordReg" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="mrgn">
+            Роль
+            <div>
+                <select asp-for="Role" type="input" class="form-select" aria-label="Default select">
+                    <option selected="">@Model.Role.Name</option>
+                    <option value="1">Пользователь</option>
+                    <option value="2">Администратор</option>
+                    <option value="3">Модератор</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+ 
+    <div>
+        <input class="bg-success text-white" type="submit" value="Обновить данные" />
+    </div>
+</form>

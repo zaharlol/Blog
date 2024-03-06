@@ -68,7 +68,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult ViewArticle(Guid id)
         {
-            Article artical = db.Articles.Include(s => s.User).Include(s => s.Comments).FirstOrDefault(x => x.Id == id);
+            Article artical = db.Articles.Include(s => s.User).Include(s => s.Comments).ThenInclude(s => s.User).FirstOrDefault(x => x.Id == id);
 
             return View("Article", artical);
 
@@ -88,8 +88,10 @@ namespace Blog.Controllers
         public IActionResult UpdateArticles(Article model)
         {
             Article article = db.Articles.FirstOrDefault(x => x.Id == model.Id);
+
             article.Title = model.Title;
             article.Content = model.Content;
+
             db.Articles.Update(article);
             db.SaveChanges();
 
@@ -98,7 +100,7 @@ namespace Blog.Controllers
 
         public IActionResult Delete(Guid id)
         {
-            var art = db.Articles.FirstOrDefault(x => x.Id == id);
+            var art = db.Articles.Include(s => s.Comments).FirstOrDefault(x => x.Id == id);
             db.Articles.Remove(art);
             db.SaveChanges();
 
