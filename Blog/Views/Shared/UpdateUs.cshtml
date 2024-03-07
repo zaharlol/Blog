@@ -37,18 +37,41 @@
         <div class="mrgn">
             Роль
             <div>
-                <select asp-for="Role" type="input" class="form-select" aria-label="Default select">
+                @if (User.IsInRole("Пользователь"))
+                {
+                <select asp-for="RoleId" type="input" class="form-select" aria-label="Default select">
                     <option selected="">@Model.Role.Name</option>
-                    <option value="1">Пользователь</option>
                     <option value="2">Администратор</option>
                     <option value="3">Модератор</option>
                 </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+                }
+                else
+                @if (User.IsInRole("Администратор"))
+                {
+                    <select asp-for="RoleId" type="input" class="form-select" aria-label="Default select">
+                        <option selected="">@Model.Role.Name</option>
+                        <option value="1">Пользователь</option>
+                        <option value="3">Модератор</option>
+                    </select>
+                    <span asp-validation-for="RoleId" class="text-danger"></span>
+                }
+                else
+                @if (User.IsInRole("Модератор"))
+                {
+                    <select asp-for="RoleId" type="input" class="form-select" aria-label="Default select">
+                        <option selected="">@Model.Role.Name</option>
+                        <option value="1">Пользователь</option>
+                        <option value="2">Администратор</option>
+                    </select>
+                    <span asp-validation-for="RoleId" class="text-danger"></span>
+                }
             </div>
         </div>
     </div>
  
     <div>
         <input class="bg-success text-white" type="submit" value="Обновить данные" />
+        <button class="bg-danger text-white" type="button" onclick="location.href='@Url.Action("Delete","User", Model)'">Удалить пользователя</button>
     </div>
 </form>
