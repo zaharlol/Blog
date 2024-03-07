@@ -175,18 +175,18 @@ namespace Blog.Controllers
             user.LastName = model.LastName;
             user.PasswordReg = model.PasswordReg;
 
-            Role role = db.Roles.FirstOrDefault(role => role.Id == model.RoleId);
-
-            if (role == null)
+            if (model.RoleId != 0)
             {
-                role = new Role { Id = model.RoleId };
+                Role role = db.Roles.FirstOrDefault(role => role.Id == model.RoleId);
+
+                if (role == null) role = new Role { Id = model.RoleId };
+
                 if (model.RoleId == 1) role.Name = "Пользователь";
                 if (model.RoleId == 2) role.Name = "Администратор";
                 if (model.RoleId == 3) role.Name = "Модератор";
-                
-            }
- 
+
                 user.Role = role;
+            }
 
             db.Users.Update(user);
             db.SaveChanges();
