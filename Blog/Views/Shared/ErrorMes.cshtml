@@ -1,0 +1,8 @@
+﻿@{
+    ViewData["Title"] = "ErrorMes";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <h1 class="text-danger text-xl-center">Доступ  запрещён</h1>
+}

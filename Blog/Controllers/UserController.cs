@@ -125,18 +125,24 @@ namespace Blog.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
         }
 
-        [Authorize]
         [Route("Account")]
         [HttpGet]
         public IActionResult Account(AccountViewModel model)
         {
-            User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+            if (User.Identity.IsAuthenticated)
+            {
+                User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
 
-            model.User = user;
-            model.Name = user.LastName + " " + user.FirstName;
-            model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
+                model.User = user;
+                model.Name = user.LastName + " " + user.FirstName;
+                model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
 
-            return View("Account", model);
+                return View("Account", model);
+            }
+            else
+            {
+                return View("ErrorMes");
+            }
         }
 
         [Route("Logout")]
