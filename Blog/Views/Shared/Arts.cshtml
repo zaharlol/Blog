@@ -23,8 +23,11 @@
                 </div>                 
             </div>
         }
+        @if (User.Identity.IsAuthenticated)
+        {
     <button type="button"
             onclick="location.href='@Url.Action("","NewArticle")'">
         Новая статья
     </button>
+        }
 </div>

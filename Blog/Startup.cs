@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NLog;
+using NLog.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,10 +39,12 @@ namespace Blog
             {
                 v.AddProfile(new MappingProfile());
             });
-
             IMapper mapper = mapperConfig.CreateMapper();
-
             services.AddSingleton(mapper);
+
+            var logger = NLog.LogManager.Setup();
+
+            services.AddSingleton(logger);
 
             services.AddAuthentication(options => options.DefaultScheme = "Cookies")
                 .AddCookie("Cookies", options =>
@@ -51,6 +55,9 @@ namespace Blog
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            logger.Debug("init main");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -61,6 +68,7 @@ namespace Blog
 
                 app.UseHsts();
             }
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

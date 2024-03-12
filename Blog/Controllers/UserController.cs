@@ -10,8 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Logging;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,17 +26,20 @@ namespace Blog.Controllers
     {
         DataContext db;
         IMapper mapper;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(DataContext data, IMapper mapper)
+        public UserController(DataContext data, IMapper mapper, ILogger<UserController> logger)
         {
             db = data;
             this.mapper = mapper;
+            _logger = logger;
         }
 
         [Route("Register")]
         [HttpGet]
         public IActionResult Register()
         {
+            _logger.LogInformation("Регистрация");
             return View("Register");
         }
 
@@ -42,6 +48,7 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+
             if (ModelState.IsValid)
             {
                 User user = new User()
@@ -60,15 +67,31 @@ namespace Blog.Controllers
                         Id = 1,
                         Name = "Пользователь"
                     };
+                    db.Roles.Add(new Role
+                    {
+                        Id = 2,
+                        Name = "Администратор"
+                    });
+                    db.Roles.Add(new Role
+                    {
+                        Id = 3,
+                        Name = "Модератор"
+                    });
                 }
 
+                   
                 user.Role = role;
 
-                db.Users.Add(user);
+                db.Users.Add(user);           
+                    
+                
                 db.SaveChanges();
+
                 await Authenticate(user);
 
                 mapper.Map<User>(user);
+
+                _logger.LogInformation("Зарегестрировался пользователь: " + user.FirstName);
 
                 return View("Login");
             }
@@ -125,6 +148,7 @@ namespace Blog.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
         }
 
+        [Authorize] 
         [Route("Account")]
         [HttpGet]
         public IActionResult Account(AccountViewModel model)
