@@ -26,9 +26,9 @@ namespace Blog.Controllers
     {
         DataContext db;
         IMapper mapper;
-        private readonly ILogger<UserController> _logger;
+        private readonly Logger _logger;
 
-        public UserController(DataContext data, IMapper mapper, ILogger<UserController> logger)
+        public UserController(DataContext data, IMapper mapper, Logger logger)
         {
             db = data;
             this.mapper = mapper;
@@ -39,7 +39,6 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            _logger.LogInformation("Регистрация");
             return View("Register");
         }
 
@@ -91,7 +90,7 @@ namespace Blog.Controllers
 
                 mapper.Map<User>(user);
 
-                _logger.LogInformation("Зарегестрировался пользователь: " + user.FirstName);
+                _logger.Trace("Зарегестрировался пользователь {0}", user.Id);
 
                 return View("Login");
             }
@@ -146,27 +145,37 @@ namespace Blog.Controllers
                 );
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            _logger.Trace("Пользователь {0} аутентифицировался", user.Id);
         }
 
         [Authorize] 
         [Route("Account")]
         [HttpGet]
         public IActionResult Account(AccountViewModel model)
-        {
+        {         
             if (User.Identity.IsAuthenticated)
             {
-                User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+                    User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+                if (user == null)
+                {
+                    _logger.Error("Пользователь не найден");
+                    HttpContext.SignOutAsync();
+                    return View("Login");
+                }
+                else
+                {
+                    model.User = user;
+                    model.Name = user.LastName + " " + user.FirstName;
+                    model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
 
-                model.User = user;
-                model.Name = user.LastName + " " + user.FirstName;
-                model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
-
-                return View("Account", model);
+                    return View("Account", model);
+                }
             }
             else
             {
                 return View("ErrorMes");
-            }
+            }                 
         }
 
         [Route("Logout")]
@@ -223,9 +232,10 @@ namespace Blog.Controllers
 
             await Authenticate(user);
 
+            _logger.Trace("Пользователь {0} обновлён", user.Id);
+
             return RedirectToAction("Account", "User");
         }
-
 
         public async Task<IActionResult> Delete(User user) 
         {        
@@ -233,6 +243,8 @@ namespace Blog.Controllers
             await HttpContext.SignOutAsync();
             db.Users.Remove(del);
             await db.SaveChangesAsync();
+
+            _logger.Trace("Пользователь {0} удалён", user.Id);
 
             return View("Login");
         }

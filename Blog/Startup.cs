@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NLog.Web;
 using System;
@@ -31,7 +32,7 @@ namespace Blog
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {                  
             services.AddControllersWithViews();
             services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=Blog.db"));
 
@@ -42,25 +43,21 @@ namespace Blog
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            var logger = NLog.LogManager.Setup();
-
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
             services.AddSingleton(logger);
 
             services.AddAuthentication(options => options.DefaultScheme = "Cookies")
                 .AddCookie("Cookies", options =>
                 {
                     options.LoginPath = new PathString("/Login");
-                });
+                });           
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-            logger.Debug("init main");
-
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Home/Error");
             }
             else
             {

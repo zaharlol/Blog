@@ -2,6 +2,7 @@
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,12 @@ namespace Blog.Controllers
     public class CommentController : Controller
     {
         DataContext db;
+        private readonly Logger logger;
 
-        public CommentController(DataContext _db)
+        public CommentController(DataContext _db, Logger _logger)
         {
             db = _db;
+            logger = _logger;
         }
 
         [Route("NewComment")]
@@ -50,6 +53,8 @@ namespace Blog.Controllers
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
+                logger.Trace("Комментарий {0} добавлен", comment.Id);
+
                 return RedirectToAction("ViewArticle", "Article", new { id = model.Article.Id }); 
             }
             return View("NewComment");
@@ -74,6 +79,7 @@ namespace Blog.Controllers
             db.Comments.Update(comment);
             db.SaveChanges();
 
+            logger.Trace("Комментарий {0} обновлён", comment.Id);
 
             return RedirectToAction("ViewArticle", "Article", new { id = comment.Article.Id });
 
@@ -81,11 +87,13 @@ namespace Blog.Controllers
 
         public IActionResult Delete(Guid id) 
         {
-            var art = db.Comments.Include(s => s.Article).FirstOrDefault(x => x.Id == id);
-            db.Comments.Remove(art);
+            var comment = db.Comments.Include(s => s.Article).FirstOrDefault(x => x.Id == id);
+            db.Comments.Remove(comment);
             db.SaveChanges();
 
-            return RedirectToAction("ViewArticle", "Article", new { id = art.Article.Id });
+            logger.Trace("Комментарий {0} удалён", comment.Id);
+
+            return RedirectToAction("ViewArticle", "Article", new { id = comment.Article.Id });
         }
     }
 }
