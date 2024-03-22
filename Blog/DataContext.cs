@@ -19,25 +19,6 @@ namespace Blog
         public DataContext(DbContextOptions<DataContext> options)  : base(options)
         {   
             Database.EnsureCreated();
-
-            if (Roles == null)
-            {
-                Roles.Add(new Role
-                {
-                    Id = 1,
-                    Name = "Пользователь"
-                });
-                Roles.Add(new Role
-                {
-                    Id = 2,
-                    Name = "Администратор"
-                });
-                Roles.Add(new Role
-                {
-                    Id = 3,
-                    Name = "Модератор"
-                });
-            }
         }
     }
 }

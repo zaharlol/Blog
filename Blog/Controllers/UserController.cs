@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Blog;
 using Blog.Models;
 using Blog.Repository;
 using Blog.ViewModels;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using API.Controllers;
 
 namespace Blog.Controllers
 {
@@ -27,6 +29,7 @@ namespace Blog.Controllers
         DataContext db;
         IMapper mapper;
         private readonly Logger _logger;
+        Authenticater authenticator;
 
         public UserController(DataContext data, IMapper mapper, Logger logger)
         {
@@ -86,7 +89,7 @@ namespace Blog.Controllers
                 
                 db.SaveChanges();
 
-                await Authenticate(user);
+                await authenticator.Authenticate(user);
 
                 mapper.Map<User>(user);
 
@@ -127,26 +130,6 @@ namespace Blog.Controllers
             }
 
             return View("Login");
-        }
-
-        private async Task Authenticate(User user)
-        {
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
-            };
-
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(
-                claims,
-                "AppCookie",
-                ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType
-                );
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-            _logger.Trace("Пользователь {0} аутентифицировался", user.Id);
         }
 
         [Authorize] 
