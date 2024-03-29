@@ -1,5 +1,6 @@
 ﻿using Blog;
 using Blog.Models;
+using Blog.Services.IServices;
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,13 +20,11 @@ namespace Blog.Controllers
 {
     public class ArticleController : Controller
     {
-        DataContext db;
-        private readonly Logger logger;
+        private readonly IArticleService article;
 
-        public ArticleController(DataContext _db, Logger _logger)
+        public ArticleController(IArticleService service)
         {
-            db = _db;
-            logger = _logger;
+            article = service;
         }
 
         [Route("NewArticle")]
@@ -39,83 +38,40 @@ namespace Blog.Controllers
         [HttpPost]
         public IActionResult Create(ArticleViewModel model)
         {
-
-            User currentUser = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
-
-            if (ModelState.IsValid)
-            {
-                Article article = new Article()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = model.Title,
-                    Content = model.Content,
-                    User = currentUser,
-                };
-                db.Articles.Add(article);
-                db.SaveChanges();
-
-                logger.Trace("Статья {0} добавлена", article.Id);
-
-                return ViewArticles();
-            }
-            return View("NewArticle");
+            return article.Create(model);           
         }
 
         [Route("Arts")]
         [HttpGet]
         public IActionResult ViewArticles()
         {
-            List<Article> articles = db.Articles.Include(s => s.User).Include(s => s.Comments).ToList();
-
-            return View("Arts", articles);
-
+            return article.ViewArticles();   
         }
 
         [Route("Article")]
         [HttpGet]
         public IActionResult ViewArticle(Guid id)
         {
-            Article artical = db.Articles.Include(s => s.User).Include(s => s.Comments).ThenInclude(s => s.User).FirstOrDefault(x => x.Id == id);
-
-            return View("Article", artical);
-
+            return article.ViewArticle(id);           
         }
 
         [Route("UpdateArt")]
         [HttpGet]
         public IActionResult UpdateArticle(Guid id) 
         {
-            Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
-
-            return View("UpdateArt", artical);
+            return article.UpdateArticle(id);            
         }
 
         [Route("UpdateArt")]
         [HttpPost]
         public IActionResult UpdateArticles(Article model)
         {
-            Article article = db.Articles.FirstOrDefault(x => x.Id == model.Id);
-
-            article.Title = model.Title;
-            article.Content = model.Content;
-
-            db.Articles.Update(article);
-            db.SaveChanges();
-
-            logger.Trace("Статья {0} обновлена" + article.Id);
-
-            return RedirectToAction("", "Account");
+            return article.UpdateArticles(model);            
         }
 
         public IActionResult Delete(Guid id)
         {
-            var art = db.Articles.Include(s => s.Comments).FirstOrDefault(x => x.Id == id);
-            db.Articles.Remove(art);
-            db.SaveChanges();
-
-            logger.Trace("Статья {0} удалена" + art.Id);
-
-            return RedirectToAction("", "Account");
+            return article.Delete(id);            
         }
     }
 }

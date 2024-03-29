@@ -2,6 +2,7 @@
 using Blog;
 using Blog.Models;
 using Blog.Repository;
+using Blog.Services.IServices;
 using Blog.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,20 +21,17 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Blog.Services;
 
 namespace Blog.Controllers
 {
     public class UserController : Controller
     {
-        DataContext db;
-        IMapper mapper;
-        private readonly Logger _logger;
+        private readonly IAccountService account;
 
-        public UserController(DataContext data, IMapper mapper, Logger logger)
+        public UserController(IAccountService accountService)
         {
-            db = data;
-            this.mapper = mapper;
-            _logger = logger;
+            account = accountService;
         }
 
         [Route("Register")]
@@ -48,56 +46,8 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-
-            if (ModelState.IsValid)
-            {
-                User user = new User()
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    PasswordReg = model.PasswordReg,
-                };
-
-                Role role = db.Roles.FirstOrDefault(r => r.Id == 1);
-
-                if (role == null)
-                {
-                    role = new Role
-                    {
-                        Id = 1,
-                        Name = "Пользователь"
-                    };
-                    db.Roles.Add(new Role
-                    {
-                        Id = 2,
-                        Name = "Администратор"
-                    });
-                    db.Roles.Add(new Role
-                    {
-                        Id = 3,
-                        Name = "Модератор"
-                    });
-                }
-
-                   
-                user.Role = role;
-
-                db.Users.Add(user);           
-                    
-                
-                db.SaveChanges();
-
-                await Authenticate(user);
-
-                mapper.Map<User>(user);
-
-                _logger.Trace("Зарегестрировался пользователь {0}", user.Id);
-
-                return View("Login");
-            }
-            return View("Register");
+            return await account.Register(model);            
         }
-
 
         [Route("Login")]
         [HttpGet]
@@ -111,52 +61,15 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-
-            if (ModelState.IsValid)
-            {
-                User user = await db.Users.Include(s => s.Role).FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
-
-                if (model.PasswordReg == user.PasswordReg)
-                {
-                    await Authenticate(user);
-                    return RedirectToAction("", "Account");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                }
-            }
-
-            return View("Login");
+            return await account.Login(model);
         }
 
         [Authorize] 
         [Route("Account")]
         [HttpGet]
         public IActionResult Account(AccountViewModel model)
-        {         
-            if (User.Identity.IsAuthenticated)
-            {
-                    User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
-                if (user == null)
-                {
-                    _logger.Error("Пользователь не найден");
-                    HttpContext.SignOutAsync();
-                    return View("Login");
-                }
-                else
-                {
-                    model.User = user;
-                    model.Name = user.LastName + " " + user.FirstName;
-                    model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
-
-                    return View("Account", model);
-                }
-            }
-            else
-            {
-                return View("ErrorMes");
-            }                 
+        {
+            return account.Account(model);
         }
 
         [Route("Logout")]
@@ -171,84 +84,26 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult ViewUsers() 
         {
-            List<User> users = db.Users.Include(s => s.Articles).ToList();
-
-            return View("Users", users);
+            return account.ViewUsers();            
         }
-
 
         [Route("UpdateUs")]
         [HttpGet]
         public IActionResult UpdateUser(string login) 
         {
-            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == login);
-            return View("UpdateUs", user);
+            return account.UpdateUser(login);            
         }
 
         [Route("UpdateUs")]
         [HttpPost]
         public async Task<IActionResult> UpdateUsers(User model)
         {
-            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == User.Identity.Name);
-
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.PasswordReg = model.PasswordReg;
-
-            if (model.RoleId != 0)
-            {
-                Role role = db.Roles.FirstOrDefault(role => role.Id == model.RoleId);
-
-                if (role == null) role = new Role { Id = model.RoleId };
-
-                if (model.RoleId == 1) role.Name = "Пользователь";
-                if (model.RoleId == 2) role.Name = "Администратор";
-                if (model.RoleId == 3) role.Name = "Модератор";
-
-                user.Role = role;
-            }
-
-            db.Users.Update(user);
-            db.SaveChanges();
-
-            await Authenticate(user);
-
-            _logger.Trace("Пользователь {0} обновлён", user.Id);
-
-            return RedirectToAction("Account", "User");
+            return await account.UpdateUsers(model);            
         }
 
         public async Task<IActionResult> Delete(User user) 
         {        
-            var del = db.Users.FirstOrDefault(x => x.Id == user.Id);
-            await HttpContext.SignOutAsync();
-            db.Users.Remove(del);
-            await db.SaveChangesAsync();
-
-            _logger.Trace("Пользователь {0} удалён", user.Id);
-
-            return View("Login");
-        }
-
-
-        public async Task Authenticate(User user)
-        {
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.FirstName),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.Name)
-            };
-
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(
-                claims,
-                "AppCookie",
-                ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType
-                );
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-            _logger.Trace("Пользователь {0} аутентифицировался", user.Id);
+            return await account.Delete(user);           
         }
     }
 }

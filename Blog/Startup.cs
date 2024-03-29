@@ -1,6 +1,8 @@
 using AutoMapper;
 using Blog.Models;
 using Blog.Repository;
+using Blog.Services.IServices;
+using Blog.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +43,10 @@ namespace Blog
                 v.AddProfile(new MappingProfile());
             });
             IMapper mapper = mapperConfig.CreateMapper();
-            services.AddSingleton(mapper);
+            services.AddSingleton(mapper)
+                .AddTransient<IAccountService, AccountService>()
+                .AddTransient<IArticleService, ArticleService>()
+                .AddTransient<ICommentService, CommentService>();
 
             var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
             services.AddSingleton(logger);
@@ -57,7 +62,7 @@ namespace Blog
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
             }
             else
             {
