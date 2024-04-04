@@ -38,7 +38,7 @@ namespace Blog.Controllers
         [HttpPost]
         public IActionResult Create(ArticleViewModel model)
         {
-            return article.Create(model);           
+            return article.Create(model, HttpContext);           
         }
 
         [Route("Arts")]

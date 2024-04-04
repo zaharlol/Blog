@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.Services
 {
@@ -23,9 +24,9 @@ namespace Blog.Services
             logger = _logger;
         }
 
-        public IActionResult Create(ArticleViewModel model)
+        public IActionResult Create(ArticleViewModel model, HttpContext http)
         {
-            User currentUser = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+            User currentUser = db.Users.FirstOrDefault(u => u.FirstName == http.User.Identity.Name);
 
             if (ModelState.IsValid)
             {

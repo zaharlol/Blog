@@ -43,8 +43,8 @@ namespace Blog
                 v.AddProfile(new MappingProfile());
             });
             IMapper mapper = mapperConfig.CreateMapper();
-            services.AddSingleton(mapper)
-                .AddTransient<IAccountService, AccountService>()
+            services.AddSingleton(mapper);
+            services.AddTransient<IAccountService, AccountService>()
                 .AddTransient<IArticleService, ArticleService>()
                 .AddTransient<ICommentService, CommentService>();
 

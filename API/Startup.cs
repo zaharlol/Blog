@@ -3,7 +3,8 @@ using API.Controllers;
 using AutoMapper;
 using Blog;
 using Blog.Controllers;
-using Blog.Models;
+using Blog.Services;
+using Blog.Services.IServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,23 @@ namespace API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+
+            services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=Blog.db"));
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            services.AddSingleton(logger);
+
+            services.AddControllersWithViews();
+
+            services.AddTransient<IAccountService, AccountService>()
+                .AddTransient<IArticleService, ArticleService>()
+                .AddTransient<ICommentService, CommentService>();
+
+            services.AddAuthentication(options => options.DefaultScheme = "Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    options.LoginPath = new PathString("/Login");
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

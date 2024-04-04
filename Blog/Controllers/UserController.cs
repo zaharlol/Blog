@@ -46,7 +46,7 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            return await account.Register(model);            
+            return await account.Register(model, HttpContext);            
         }
 
         [Route("Login")]
@@ -61,7 +61,7 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            return await account.Login(model);
+            return await account.Login(model, HttpContext);
         }
 
         [Authorize] 
@@ -69,7 +69,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult Account(AccountViewModel model)
         {
-            return account.Account(model);
+            return account.Account(model, HttpContext);
         }
 
         [Route("Logout")]
@@ -98,12 +98,12 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUsers(User model)
         {
-            return await account.UpdateUsers(model);            
+            return await account.UpdateUsers(model, HttpContext);            
         }
 
         public async Task<IActionResult> Delete(User user) 
         {        
-            return await account.Delete(user);           
+            return await account.Delete(user, HttpContext);           
         }
     }
 }

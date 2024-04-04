@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Blog.Services.IServices
 {
     public interface IAccountService
     {
-        Task<IActionResult> Register(RegisterViewModel model);
-        Task<IActionResult> Login(LoginViewModel model);
-        IActionResult Account(AccountViewModel model);
-        Task<IActionResult> UpdateUsers(User model);
-        Task<IActionResult> Delete(User user);
+        Task<IActionResult> Register(RegisterViewModel model, HttpContext http);
+        Task<IActionResult> Login(LoginViewModel model, HttpContext http);
+        IActionResult Account(AccountViewModel model, HttpContext http);
+        Task<IActionResult> UpdateUsers(User model, HttpContext http);
+        Task<IActionResult> Delete(User user, HttpContext http);
         IActionResult ViewUsers();
         IActionResult UpdateUser(string login);
     }

@@ -38,15 +38,15 @@ namespace Blog.Services
             db = data;
         }
 
-        public IActionResult Account(AccountViewModel model)
+        public IActionResult Account(AccountViewModel model, HttpContext http)
         {
-            if (User.Identity.IsAuthenticated)
+            if (http.User.Identity.IsAuthenticated)
             {
-                User user = db.Users.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+                User user = db.Users.FirstOrDefault(u => u.FirstName == http.User.Identity.Name);
                 if (user == null)
                 {
                     _logger.Error("Пользователь не найден");
-                    HttpContext.SignOutAsync();
+                    http.SignOutAsync();
                     return View("Login");
                 }
                 else
@@ -64,10 +64,10 @@ namespace Blog.Services
             }
         }
 
-        public async Task<IActionResult> Delete(User user)
+        public async Task<IActionResult> Delete(User user, HttpContext http)
         {
             var del = db.Users.FirstOrDefault(x => x.Id == user.Id);
-            await HttpContext.SignOutAsync();
+            await http.SignOutAsync();
             db.Users.Remove(del);
             await db.SaveChangesAsync();
 
@@ -76,27 +76,24 @@ namespace Blog.Services
             return View("Login");
         }
 
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, HttpContext http)
         {
-            if (ModelState.IsValid)
-            {
                 User user = await db.Users.Include(s => s.Role).FirstOrDefaultAsync(s => s.FirstName == model.FirstName);
 
                 if (model.PasswordReg == user.PasswordReg)
                 {
-                    await Authenticate(user);
+                    await Authenticate(user, http);
                     return RedirectToAction("", "Account");
                 }
                 else
                 {
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
                 }
-            }
-
+                
             return View("Login");
         }
 
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model, HttpContext http)
         {
             if (ModelState.IsValid)
             {
@@ -136,7 +133,7 @@ namespace Blog.Services
 
                 db.SaveChanges();
 
-                await Authenticate(user);
+                await Authenticate(user, http);
 
                 _logger.Trace("Зарегестрировался пользователь {0}", user.Id);
 
@@ -145,9 +142,9 @@ namespace Blog.Services
             return View("Register");
         }
 
-        public async Task<IActionResult> UpdateUsers(User model)
+        public async Task<IActionResult> UpdateUsers(User model, HttpContext http)
         {
-            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == User.Identity.Name);
+            User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == http.User.Identity.Name);
 
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
@@ -169,7 +166,7 @@ namespace Blog.Services
             db.Users.Update(user);
             db.SaveChanges();
 
-            await Authenticate(user);
+            await Authenticate(user, http);
 
             _logger.Trace("Пользователь {0} обновлён", user.Id);
 
@@ -189,7 +186,7 @@ namespace Blog.Services
             return View("UpdateUs", user);
         }
 
-        public async Task Authenticate(User user)
+        public async Task Authenticate(User user, HttpContext http)
         {
             var claims = new List<Claim>()
             {
@@ -204,7 +201,7 @@ namespace Blog.Services
                 ClaimsIdentity.DefaultRoleClaimType
                 );
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
             _logger.Trace("Пользователь {0} аутентифицировался", user.Id);
         }
