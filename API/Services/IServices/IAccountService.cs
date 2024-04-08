@@ -14,10 +14,10 @@ namespace Blog.Services.IServices
     {
         Task<IActionResult> Register(RegisterViewModel model, HttpContext http);
         Task<IActionResult> Login(LoginViewModel model, HttpContext http);
-        IActionResult Account(AccountViewModel model, HttpContext http);
+        User Account(AccountViewModel model, HttpContext http);
         Task<IActionResult> UpdateUsers(User model, HttpContext http);
         Task<IActionResult> Delete(User user, HttpContext http);
-        IActionResult ViewUsers();
-        IActionResult UpdateUser(string login);
+        List<User> ViewUsers();
+        User UpdateUser(string login);
     }
 }

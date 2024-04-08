@@ -7,9 +7,9 @@ namespace Blog.Services.IServices
 {
     public interface ICommentService
     {
-        IActionResult CreateG(Guid id);
+        CommentViewModel CreateG(Guid id);
         IActionResult CreateP(CommentViewModel model);
-        IActionResult UpdateComment(Guid id);
+        Comment UpdateComment(Guid id);
         IActionResult UpdateComments(Comment model);
         IActionResult Delete(Guid id);
     }

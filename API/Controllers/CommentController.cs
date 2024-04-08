@@ -21,7 +21,7 @@ namespace Blog.Controllers
 
         [Route("NewComment")]
         [HttpGet]
-        public IActionResult CreateG(Guid id)
+        public CommentViewModel CreateG(Guid id)
         {
             return comment.CreateG(id);
         }
@@ -35,7 +35,7 @@ namespace Blog.Controllers
 
         [Route("UpdateCom")]
         [HttpGet]
-        public IActionResult UpdateComment(Guid id)
+        public Comment UpdateComment(Guid id)
         {
             return comment.UpdateComment(id);
         }
@@ -47,6 +47,8 @@ namespace Blog.Controllers
             return comment.UpdateComments(model);
         }
 
+        [Route("DeleteCom")]
+        [HttpPost]
         public IActionResult Delete(Guid id) 
         {
             return comment.Delete(id);            

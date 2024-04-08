@@ -31,7 +31,7 @@ namespace Blog.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View("NewArticle");
+            return StatusCode(200);
         }
 
         [Route("NewArticle")]
@@ -43,21 +43,21 @@ namespace Blog.Controllers
 
         [Route("Arts")]
         [HttpGet]
-        public IActionResult ViewArticles()
+        public List<Article> ViewArticles()
         {
             return article.ViewArticles();   
         }
 
         [Route("Article")]
         [HttpGet]
-        public IActionResult ViewArticle(Guid id)
+        public Article ViewArticle(Guid id)
         {
             return article.ViewArticle(id);           
         }
 
         [Route("UpdateArt")]
         [HttpGet]
-        public IActionResult UpdateArticle(Guid id) 
+        public Article UpdateArticle(Guid id) 
         {
             return article.UpdateArticle(id);            
         }
@@ -69,6 +69,8 @@ namespace Blog.Controllers
             return article.UpdateArticles(model);            
         }
 
+        [Route("DeleteArt")]
+        [HttpPost]
         public IActionResult Delete(Guid id)
         {
             return article.Delete(id);            

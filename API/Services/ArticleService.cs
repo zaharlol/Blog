@@ -42,9 +42,9 @@ namespace Blog.Services
 
                 logger.Trace("Статья {0} добавлена", article.Id);
 
-                return ViewArticles();
+                return StatusCode(200);
             }
-            return View("NewArticle");
+            return StatusCode(204);
         }
 
         public IActionResult Delete(Guid id)
@@ -55,14 +55,14 @@ namespace Blog.Services
 
             logger.Trace("Статья {0} удалена" + art.Id);
 
-            return RedirectToAction("", "Account");
+            return StatusCode(200);
         }
 
-        public IActionResult UpdateArticle(Guid id)
+        public Article UpdateArticle(Guid id)
         {
             Article artical = db.Articles.FirstOrDefault(x => x.Id == id);
 
-            return View("UpdateArt", artical);
+            return artical;
         }
 
         public IActionResult UpdateArticles(Article model)
@@ -77,21 +77,21 @@ namespace Blog.Services
 
             logger.Trace("Статья {0} обновлена" + article.Id);
 
-            return RedirectToAction("", "Account");
+            return StatusCode(200);
         }
 
-        public IActionResult ViewArticle(Guid id)
+        public Article ViewArticle(Guid id)
         {
             Article artical = db.Articles.Include(s => s.User).Include(s => s.Comments).ThenInclude(s => s.User).FirstOrDefault(x => x.Id == id);
 
-            return View("Article", artical);
+            return artical;
         }
 
-        public IActionResult ViewArticles()
+        public List<Article> ViewArticles()
         {
             List<Article> articles = db.Articles.Include(s => s.User).Include(s => s.Comments).ToList();
 
-            return View("Arts", articles);
+            return articles;
         }        
     }
 }

@@ -22,6 +22,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static  Microsoft.AspNetCore.Mvc.Controller;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
 
 namespace Blog.Services
@@ -37,7 +38,7 @@ namespace Blog.Services
             db = data;
         }
 
-        public IActionResult Account(AccountViewModel model, HttpContext http)
+        public User Account(AccountViewModel model, HttpContext http)
         {
             if (http.User.Identity.IsAuthenticated)
             {
@@ -46,7 +47,7 @@ namespace Blog.Services
                 {
                     _logger.Error("Пользователь не найден");
                     http.SignOutAsync();
-                    return View("Login");
+                    return null;
                 }
                 else
                 {
@@ -54,13 +55,10 @@ namespace Blog.Services
                     model.Name = user.LastName + " " + user.FirstName;
                     model.Articles = db.Articles.Where(s => s.UserId == user.Id).ToList();
 
-                    return View("Account", model);
+                    return user;
                 }
             }
-            else
-            {
-                return View("ErrorMes");
-            }
+            return null;
         }
 
         public async Task<IActionResult> Delete(User user, HttpContext http)
@@ -72,7 +70,7 @@ namespace Blog.Services
 
             _logger.Trace("Пользователь {0} удалён", user.Id);
 
-            return View("Login");
+            return StatusCode(200);
         }
 
         public async Task<IActionResult> Login(LoginViewModel model, HttpContext http)
@@ -82,14 +80,14 @@ namespace Blog.Services
                 if (model.PasswordReg == user.PasswordReg)
                 {
                     await Authenticate(user, http);
-                    return RedirectToAction("", "Account");
+                    return StatusCode(200);
                 }
                 else
                 {
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
                 }
                 
-            return View("Login");
+            return StatusCode(204);
         }
 
         public async Task<IActionResult> Register(RegisterViewModel model, HttpContext http)
@@ -124,11 +122,9 @@ namespace Blog.Services
                     });
                 }
 
-
                 user.Role = role;
 
                 db.Users.Add(user);
-
 
                 db.SaveChanges();
 
@@ -136,9 +132,9 @@ namespace Blog.Services
 
                 _logger.Trace("Зарегестрировался пользователь {0}", user.Id);
 
-                return View("Login");
+                return StatusCode(200);
             }
-            return View("Register");
+            return StatusCode(204);            
         }
 
         public async Task<IActionResult> UpdateUsers(User model, HttpContext http)
@@ -169,20 +165,20 @@ namespace Blog.Services
 
             _logger.Trace("Пользователь {0} обновлён", user.Id);
 
-            return RedirectToAction("Account", "User");
+            return StatusCode(200);
         }
 
-        public IActionResult ViewUsers()
+        public List<User> ViewUsers()
         {
             List<User> users = db.Users.Include(s => s.Articles).ToList();
 
-            return View("Users", users);
+            return users;
         }
 
-        public IActionResult UpdateUser(string login)
+        public User UpdateUser(string login)
         {
             User user = db.Users.Include(s => s.Role).FirstOrDefault(s => s.FirstName == login);
-            return View("UpdateUs", user);
+            return user;
         }
 
         public async Task Authenticate(User user, HttpContext http)

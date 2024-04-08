@@ -21,7 +21,7 @@ namespace Blog.Services
             logger = _logger;
         }
 
-        public IActionResult CreateG(Guid id)
+        public CommentViewModel CreateG(Guid id)
         {
             Article article = db.Articles.FirstOrDefault(s => s.Id == id);
 
@@ -29,7 +29,7 @@ namespace Blog.Services
 
             CommentViewModel comment = new CommentViewModel("", comments, article);
 
-            return View("NewComment", comment);
+            return comment;
         }
 
         public IActionResult CreateP(CommentViewModel model)
@@ -52,9 +52,9 @@ namespace Blog.Services
 
                 logger.Trace("Комментарий {0} добавлен", comment.Id);
 
-                return RedirectToAction("ViewArticle", "Article", new { id = model.Article.Id });
+                return StatusCode(200);
             }
-            return View("NewComment");
+            return StatusCode(204);
         }
 
         public IActionResult Delete(Guid id)
@@ -65,14 +65,14 @@ namespace Blog.Services
 
             logger.Trace("Комментарий {0} удалён", comment.Id);
 
-            return RedirectToAction("ViewArticle", "Article", new { id = comment.Article.Id });
+            return StatusCode(200);
         }
 
-        public IActionResult UpdateComment(Guid id)
+        public Comment UpdateComment(Guid id)
         {
             Comment comment = db.Comments.FirstOrDefault(s => s.Id == id);
 
-            return View("UpdateCom", comment);
+            return comment;
         }
 
         public IActionResult UpdateComments(Comment model)
@@ -85,7 +85,7 @@ namespace Blog.Services
 
             logger.Trace("Комментарий {0} обновлён", comment.Id);
 
-            return RedirectToAction("ViewArticle", "Article", new { id = comment.Article.Id });
+            return StatusCode(200);
         }
     }
 }
