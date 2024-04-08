@@ -40,7 +40,7 @@ namespace Blog.Controllers
             return StatusCode(200);
         }
 
-        [ValidateAntiForgeryToken]
+
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -57,7 +57,6 @@ namespace Blog.Controllers
 
         [Route("Login")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             return await account.Login(model, HttpContext);

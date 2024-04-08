@@ -1,4 +1,3 @@
-
 using API.Controllers;
 using AutoMapper;
 using Blog;
@@ -22,6 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace API
 {
